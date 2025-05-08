@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rotas de Transporte - Sistema de Saúde Pública</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="js/acessibilidade.js" defer></script>
+</head>
+<body>
+  <header class="main-header">
+    <div class="container">
+      <div class="logo">
+        <a href="index.html">Sistema de Saúde Pública</a>
+      </div>
+      <button class="menu-toggle" aria-label="Abrir menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="index.html">Página Inicial</a></li>
+          <li><a href="agendar.html">Agendar Consulta</a></li>
+          <li><a href="unidades.html">Buscar Unidades</a></li>
+          <li><a href="status.html">Status de Lotação</a></li>
+          <li><a href="rotas.html" class="active">Rotas de Transporte</a></li>
+          <li><a href="alertas.html">Alertas</a></li>
+        </ul>
+        <div class="auth-buttons">
+          <button class="btn btn-outline">Entrar</button>
+          <button class="btn btn-primary">Cadastrar</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>Rotas de Transporte</h1>
+        <p>Visualize rotas de transporte público para chegar às unidades de saúde</p>
+      </div>
+    </section>
+
+    <section class="routes-section">
+      <div class="container">
+        <div class="card">
+          <div class="card-header">
+            <h2>Selecione uma Unidade de Saúde</h2>
+            <p>Escolha a unidade para ver as rotas de transporte público disponíveis</p>
+          </div>
+          <div class="card-content">
+            <select id="unit-select" class="unit-select">
+              <option value="">Selecione uma unidade de saúde</option>
+              <option value="1">UBS Central</option>
+              <option value="2">Hospital Municipal</option>
+              <option value="3">Centro de Especialidades</option>
+              <option value="4">UBS Vila Esperança</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="routes-grid">
+          <div class="card" id="map-card">
+            <div class="card-header">
+              <h2>Mapa e Localização</h2>
+              <p id="unit-address"></p>
+            </div>
+            <div class="card-content">
+              <div class="map-placeholder" id="map-placeholder">
+                <i class="fas fa-map-marker-alt"></i>
+                <p>Mapa interativo seria exibido aqui com a localização da unidade</p>
+                <p class="small-text">(Integração com Google Maps ou OpenStreetMap)</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="bus-routes-card">
+            <div class="card-header">
+              <h2>Linhas de Ônibus</h2>
+              <p id="routes-title">Linhas que chegam até a unidade selecionada</p>
+            </div>
+            <div class="card-content">
+              <div class="routes-placeholder" id="routes-placeholder">
+                <i class="fas fa-bus"></i>
+                <p>Selecione uma unidade para ver as linhas de ônibus disponíveis</p>
+              </div>
+              <div id="routes-list" class="routes-list" style="display: none;">
+                <!-- Rotas serão inseridas aqui via JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="select-unit-placeholder" id="select-unit-placeholder">
+          <i class="fas fa-map-marker-alt"></i>
+          <h3>Selecione uma Unidade de Saúde</h3>
+          <p>Escolha uma unidade de saúde para visualizar as rotas de transporte público disponíveis e o mapa com a localização.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 Sistema de Saúde Pública. Todos os direitos reservados.</p>
+      <div class="footer-links">
+        <a href="acessibilidade.html">Acessibilidade</a>
+        <a href="privacidade.html">Política de Privacidade</a>
+        <a href="termos.html">Termos de Uso</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="accessibility-controls">
+    <button class="accessibility-toggle" aria-label="Controles de acessibilidade">
+      <i class="fas fa-universal-access"></i>
+    </button>
+    <div class="accessibility-panel">
+      <h3>Acessibilidade</h3>
+      
+      <div class="accessibility-option">
+        <label for="theme-toggle">Tema</label>
+        <button id="theme-toggle" class="btn btn-icon">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+      
+      <div class="accessibility-option">
+        <label for="font-size">Tamanho da fonte</label>
+        <div class="font-size-control">
+          <i class="fas fa-font fa-sm"></i>
+          <input type="range" id="font-size" min="80" max="150" step="10" value="100">
+          <i class="fas fa-font"></i>
+          <span class="font-size-value">100%</span>
+        </div>
+      </div>
+      
+      <div class="accessibility-option">
+        <label for="high-contrast">Alto contraste</label>
+        <label class="switch">
+          <input type="checkbox" id="high-contrast">
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <div class="accessibility-option">
+        <label for="text-to-speech">Leitura de texto</label>
+        <label class="switch">
+          <input type="checkbox" id="text-to-speech">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/rotas.js"></script>
+</body>
+</html>

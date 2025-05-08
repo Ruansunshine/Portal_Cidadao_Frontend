@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alertas e Lembretes - Sistema de Saúde Pública</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="js/acessibilidade.js" defer></script>
+</head>
+<body>
+  <header class="main-header">
+    <div class="container">
+      <div class="logo">
+        <a href="index.html">Sistema de Saúde Pública</a>
+      </div>
+      <button class="menu-toggle" aria-label="Abrir menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="index.html">Página Inicial</a></li>
+          <li><a href="agendar.html">Agendar Consulta</a></li>
+          <li><a href="unidades.html">Buscar Unidades</a></li>
+          <li><a href="status.html">Status de Lotação</a></li>
+          <li><a href="rotas.html">Rotas de Transporte</a></li>
+          <li><a href="alertas.html" class="active">Alertas</a></li>
+        </ul>
+        <div class="auth-buttons">
+          <button class="btn btn-outline">Entrar</button>
+          <button class="btn btn-primary">Cadastrar</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>Alertas e Lembretes</h1>
+        <p>Configure alertas e lembretes para suas consultas e outros serviços</p>
+      </div>
+    </section>
+
+    <section class="alerts-section">
+      <div class="container">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="configuracoes">Configurações</button>
+          <button class="tab-btn" data-tab="historico">Histórico de Alertas</button>
+        </div>
+
+        <div class="tab-content" id="configuracoes">
+          <div class="alerts-grid">
+            <div class="card">
+              <div class="card-header">
+                <h2>Tipos de Alertas</h2>
+                <p>Escolha quais tipos de alertas você deseja receber</p>
+              </div>
+              <div class="card-content">
+                <div class="alert-option">
+                  <div class="alert-option-label">
+                    <i class="fas fa-calendar-alt"></i>
+                    <label for="consultas">Lembretes de consultas</label>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="consultas" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="alert-option">
+                  <div class="alert-option-label">
+                    <i class="fas fa-bell"></i>
+                    <label for="lotacao">Alertas de lotação</label>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="lotacao">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="alert-option">
+                  <div class="alert-option-label">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <label for="transporte">Alertas de transporte</label>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="transporte" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="alert-option">
+                  <div class="alert-option-label">
+                    <i class="fas fa-clock"></i>
+                    <label for="vacinas">Lembretes de vacinas</label>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="vacinas" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h2>Métodos de Notificação</h2>
+                <p>Escolha como deseja receber seus alertas</p>
+              </div>
+              <div class="card-content">
+                <div class="alert-option">
+                  <div class="alert-option-label">
+                    <i class="fas fa-comment-alt"></i>
+                    <label for="sms">SMS</label>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="sms">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="sms-input" style="display: none;">
+                  <label for="telefone">Número de telefone</label>
+                  <input type="text" id="telefone" placeholder="(00) 00000-0000">
+                </div>
+                <div class="alert-option">
+                  <div class="alert-option-label">
+                    <i class="fas fa-envelope"></i>
+                    <label for="email-notif">E-mail</label>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="email-notif" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="email-input">
+                  <label for="email">Endereço de e-mail</label>
+                  <input type="email" id="email" placeholder="seu@email.com">
+                </div>
+                <div class="alert-option">
+                  <div class="alert-option-label">
+                    <i class="fas fa-mobile-alt"></i>
+                    <label for="push">Notificações push</label>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="push" checked>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button id="save-settings" class="btn btn-primary btn-block">Salvar Configurações</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card advanced-settings">
+            <div class="card-header">
+              <h2>Preferências Avançadas</h2>
+              <p>Configure detalhes adicionais sobre seus alertas</p>
+            </div>
+            <div class="card-content">
+              <div class="advanced-settings-grid">
+                <div class="form-group">
+                  <label for="antecedencia-consulta">Antecedência para lembretes de consulta</label>
+                  <select id="antecedencia-consulta">
+                    <option value="1">1 hora antes</option>
+                    <option value="3">3 horas antes</option>
+                    <option value="12">12 horas antes</option>
+                    <option value="24" selected>24 horas antes</option>
+                    <option value="48">2 dias antes</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="frequencia-lotacao">Frequência de alertas de lotação</label>
+                  <select id="frequencia-lotacao">
+                    <option value="imediato" selected>Imediato</option>
+                    <option value="15">A cada 15 minutos</option>
+                    <option value="30">A cada 30 minutos</option>
+                    <option value="60">A cada hora</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-content" id="historico" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <h2>Histórico de Alertas</h2>
+              <p>Alertas e notificações recentes enviados para você</p>
+            </div>
+            <div class="card-content">
+              <div class="alerts-history">
+                <div class="alert-item">
+                  <div class="alert-icon consulta">
+                    <i class="fas fa-calendar-alt"></i>
+                  </div>
+                  <div class="alert-content">
+                    <div class="alert-header">
+                      <h4>Lembrete de Consulta</h4>
+                      <span class="alert-date">Hoje, 10:30</span>
+                    </div>
+                    <p>Sua consulta com Dr. Silva está agendada para amanhã às 14:00.</p>
+                  </div>
+                </div>
+                <div class="alert-item">
+                  <div class="alert-icon lotacao">
+                    <i class="fas fa-bell"></i>
+                  </div>
+                  <div class="alert-content">
+                    <div class="alert-header">
+                      <h4>Alerta de Lotação</h4>
+                      <span class="alert-date">Ontem, 15:45</span>
+                    </div>
+                    <p>A UBS Central está com baixa lotação neste momento. Tempo de espera estimado: 15 minutos.</p>
+                  </div>
+                </div>
+                <div class="alert-item">
+                  <div class="alert-icon transporte">
+                    <i class="fas fa-map-marker-alt"></i>
+                  </div>
+                  <div class="alert-content">
+                    <div class="alert-header">
+                      <h4>Alerta de Transporte</h4>
+                      <span class="alert-date">23/04/2024, 08:15</span>
+                    </div>
+                    <p>Saia agora para chegar a tempo na sua consulta. Tempo estimado de viagem: 30 minutos.</p>
+                  </div>
+                </div>
+                <div class="alert-item">
+                  <div class="alert-icon vacina">
+                    <i class="fas fa-clock"></i>
+                  </div>
+                  <div class="alert-content">
+                    <div class="alert-header">
+                      <h4>Lembrete de Vacina</h4>
+                      <span class="alert-date">20/04/2024, 09:00</span>
+                    </div>
+                    <p>Não esqueça de tomar a segunda dose da vacina contra COVID-19 esta semana.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-outline btn-block">Ver Todos os Alertas</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 Sistema de Saúde Pública. Todos os direitos reservados.</p>
+      <div class="footer-links">
+        <a href="acessibilidade.html">Acessibilidade</a>
+        <a href="privacidade.html">Política de Privacidade</a>
+        <a href="termos.html">Termos de Uso</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="accessibility-controls">
+    <button class="accessibility-toggle" aria-label="Controles de acessibilidade">
+      <i class="fas fa-universal-access"></i>
+    </button>
+    <div class="accessibility-panel">
+      <h3>Acessibilidade</h3>
+      
+      <div class="accessibility-option">
+        <label for="theme-toggle">Tema</label>
+        <button id="theme-toggle" class="btn btn-icon">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+      
+      <div class="accessibility-option">
+        <label for="font-size">Tamanho da fonte</label>
+        <div class="font-size-control">
+          <i class="fas fa-font fa-sm"></i>
+          <input type="range" id="font-size" min="80" max="150" step="10" value="100">
+          <i class="fas fa-font"></i>
+          <span class="font-size-value">100%</span>
+        </div>
+      </div>
+      
+      <div class="accessibility-option">
+        <label for="high-contrast">Alto contraste</label>
+        <label class="switch">
+          <input type="checkbox" id="high-contrast">
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <div class="accessibility-option">
+        <label for="text-to-speech">Leitura de texto</label>
+        <label class="switch">
+          <input type="checkbox" id="text-to-speech">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/alertas.js"></script>
+</body>
+</html>

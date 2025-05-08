@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizar Localização - Sistema de Saúde Pública</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Estilos personalizados */
+    .map-container {
+      height: 400px;
+      width: 100%;
+      background-color: #f1f5f9;
+      border-radius: 0.5rem;
+    }
+    
+    .loading-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: #3b82f6;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .info-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      background-color: white;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    
+    .badge-success {
+      background-color: #d1fae5;
+      color: #10b981;
+    }
+    
+    .badge-warning {
+      background-color: #fef3c7;
+      color: #f59e0b;
+    }
+    
+    .badge-error {
+      background-color: #fee2e2;
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <div class="flex">
+          <a href="index.html" class="flex-shrink-0 flex items-center">
+            <span class="font-bold text-lg">Sistema de Saúde Pública</span>
+          </a>
+        </div>
+        <nav class="hidden md:flex space-x-8">
+          <a href="index.html" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium">Página Inicial</a>
+          <a href="unidades.html" class="text-blue-600 border-b-2 border-blue-600 px-3 py-2 text-sm font-medium">Buscar Unidades</a>
+          <a href="agendar.html" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium">Agendar Consulta</a>
+          <a href="status.html" class="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium">Status de Lotação</a>
+        </nav>
+        <div class="flex items-center">
+          <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">Entrar</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Visualizar Localização</h1>
+      <p class="text-gray-600" id="unidade-titulo">Carregando informações da unidade...</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2">
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+          <div class="p-4 border-b">
+            <h2 class="text-lg font-medium">Mapa</h2>
+          </div>
+          <div class="map-container" id="mapa">
+            <div class="loading-indicator">
+              <div class="spinner"></div>
+              <p class="text-gray-500">Carregando mapa...</p>
+            </div>
+          </div>
+          <div class="p-4 border-t">
+            <button id="btn-direcoes" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center">
+              <i class="fas fa-directions mr-2"></i>
+              Como Chegar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-1">
+        <div class="info-card">
+          <h3 class="text-lg font-medium mb-3">Informações da Unidade</h3>
+          <div class="space-y-3">
+            <div>
+              <p class="text-sm text-gray-500">Endereço</p>
+              <p id="unidade-endereco" class="font-medium">Carregando...</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Telefone</p>
+              <p id="unidade-telefone" class="font-medium">Carregando...</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-500">Horário de Funcionamento</p>
+              <p id="unidade-horario" class="font-medium">Carregando...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3 class="text-lg font-medium mb-3">Status Atual</h3>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-700">Lotação</span>
+            <span id="unidade-lotacao" class="badge badge-success">Carregando...</span>
+          </div>
+          <div class="mt-3">
+            <div class="flex justify-between text-sm mb-1">
+              <span>Ocupação</span>
+              <span id="unidade-ocupacao">0%</span>
+            </div>
+            <div class="h-2 bg-gray-200 rounded-full">
+              <div id="unidade-ocupacao-barra" class="h-full bg-green-500 rounded-full" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="mt-3 text-sm text-gray-600">
+            <i class="fas fa-clock mr-1"></i>
+            <span>Tempo estimado de espera: </span>
+            <span id="unidade-tempo-espera" class="font-medium">Carregando...</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3 class="text-lg font-medium mb-3">Serviços Disponíveis</h3>
+          <div id="unidade-servicos" class="flex flex-wrap gap-2">
+            <span class="badge bg-gray-100 text-gray-600">Carregando...</span>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3 class="text-lg font-medium mb-3">Documentos Necessários</h3>
+          <ul id="unidade-documentos" class="list-disc pl-5 text-sm text-gray-700">
+            <li>Carregando...</li>
+          </ul>
+        </div>
+
+        <div class="mt-4">
+          <a href="unidades.html" class="text-blue-600 hover:text-blue-800 flex items-center">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Voltar para lista de unidades
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-white border-t mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <p class="text-gray-500 text-sm">&copy; 2024 Sistema de Saúde Pública. Todos os direitos reservados.</p>
+        <div class="flex space-x-4 mt-4 md:mt-0">
+          <a href="#" class="text-gray-500 hover:text-gray-700 text-sm">Acessibilidade</a>
+          <a href="#" class="text-gray-500 hover:text-gray-700 text-sm">Política de Privacidade</a>
+          <a href="#" class="text-gray-500 hover:text-gray-700 text-sm">Termos de Uso</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal de direções -->
+  <div id="modal-direcoes" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-lg">
+      <div class="p-4 border-b flex justify-between items-center">
+        <h3 class="text-lg font-medium">Como Chegar</h3>
+        <button id="fechar-modal" class="text-gray-500 hover:text-gray-700">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="p-4">
+        <div class="mb-4">
+          <label for="origem" class="block text-sm font-medium text-gray-700 mb-1">Sua localização</label>
+          <input type="text" id="origem" placeholder="Digite seu endereço" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Modo de transporte</label>
+          <div class="flex space-x-2">
+            <button class="modo-transporte bg-blue-600 text-white px-3 py-2 rounded-md text-sm" data-modo="DRIVING">
+              <i class="fas fa-car mr-1"></i> Carro
+            </button>
+            <button class="modo-transporte bg-gray-200 text-gray-700 px-3 py-2 rounded-md text-sm" data-modo="TRANSIT">
+              <i class="fas fa-bus mr-1"></i> Ônibus
+            </button>
+            <button class="modo-transporte bg-gray-200 text-gray-700 px-3 py-2 rounded-md text-sm" data-modo="WALKING">
+              <i class="fas fa-walking mr-1"></i> A pé
+            </button>
+          </div>
+        </div>
+        <div id="direcoes-resultado" class="hidden">
+          <div class="p-3 bg-gray-100 rounded-md mb-3">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="font-medium">Tempo estimado:</p>
+                <p id="direcoes-tempo" class="text-lg font-bold">15 minutos</p>
+              </div>
+              <div>
+                <p class="font-medium">Distância:</p>
+                <p id="direcoes-distancia" class="text-lg font-bold">5.2 km</p>
+              </div>
+            </div>
+          </div>
+          <div class="border rounded-md">
+            <h4 class="p-3 border-b font-medium">Instruções</h4>
+            <ul id="direcoes-passos" class="divide-y">
+              <li class="p-3 flex items-start">
+                <span class="bg-gray-200 text-gray-700 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-0.5">1</span>
+                <span>Siga em direção ao norte na Av. Principal</span>
+              </li>
+              <li class="p-3 flex items-start">
+                <span class="bg-gray-200 text-gray-700 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-0.5">2</span>
+                <span>Vire à direita na Rua das Flores</span>
+              </li>
+              <li class="p-3 flex items-start">
+                <span class="bg-gray-200 text-gray-700 rounded-full w-6 h-6 flex items-center justify-center mr-3 mt-0.5">3</span>
+                <span>Continue por 2 km</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-4 flex justify-end">
+          <button id="calcular-rota" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+            Calcular Rota
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simulação de consumo de API
+    document.addEventListener('DOMContentLoaded', function() {
+      // Obter ID da unidade da URL
+      const params = new URLSearchParams(window.location.search);
+      const unidadeId = params.get('id') || '1'; // Padrão para ID 1 se não especificado
+      
+      // Carregar dados da unidade
+      carregarDadosUnidade(unidadeId);
+      
+      // Event listeners para botões
+      document.getElementById('btn-direcoes').addEventListener('click', abrirModalDirecoes);
+      document.getElementById('fechar-modal').addEventListener('click', fecharModalDirecoes);
+      document.getElementById('calcular-rota').addEventListener('click', calcularRota);
+      
+      // Event listeners para botões de modo de transporte
+      document.querySelectorAll('.modo-transporte').forEach(botao => {
+        botao.addEventListener('click', function() {
+          // Remover classe ativa de todos os botões
+          document.querySelectorAll('.modo-transporte').forEach(b => {
+            b.classList.remove('bg-blue-600', 'text-white');
+            b.classList.add('bg-gray-200', 'text-gray-700');
+          });
+          
+          // Adicionar classe ativa ao botão clicado
+          this.classList.remove('bg-gray-200', 'text-gray-700');
+          this.classList.add('bg-blue-600', 'text-white');
+        });
+      });
+    });
+    
+    // Função para carregar dados da unidade (simulação de API)
+    function carregarDadosUnidade(id) {
+      // Em um cenário real, isso seria uma chamada fetch para a API
+      setTimeout(() => {
+        // Dados simulados
+        const unidades = {
+          '1': {
+            nome: "UBS Central",
+            endereco: "Av. Principal, 123 - Centro",
+            telefone: "(11) 3333-4444",
+            horario: "Segunda a Sexta: 7h às 19h",
+            lotacao: "Baixa",
+            ocupacao: 30,
+            tempoEspera: "10 minutos",
+            servicos: ["Consulta Médica", "Vacina", "Exames Laboratoriais"],
+            documentos: ["RG", "CPF", "Cartão SUS", "Comprovante de Residência"]
+          },
+          '2': {
+            nome: "Hospital Municipal",
+            endereco: "Rua das Flores, 456 - Jardim",
+            telefone: "(11) 5555-6666",
+            horario: "24 horas",
+            lotacao: "Alta",
+            ocupacao: 85,
+            tempoEspera: "2 horas",
+            servicos: ["Emergência", "Consulta Médica", "Cirurgia", "Internação"],
+            documentos: ["RG", "CPF", "Cartão SUS"]
+          },
+          '3': {
+            nome: "Centro de Especialidades",
+            endereco: "Rua dos Médicos, 789 - Vila Nova",
+            telefone: "(11) 7777-8888",
+            horario: "Segunda a Sexta: 8h às 18h",
+            lotacao: "Média",
+            ocupacao: 60,
+            tempoEspera: "45 minutos",
+            servicos: ["Consulta Especializada", "Exames de Imagem"],
+            documentos: ["RG", "CPF", "Cartão SUS", "Encaminhamento Médico"]
+          },
+          '4': {
+            nome: "UBS Vila Esperança",
+            endereco: "Rua da Esperança, 321 - Vila Esperança",
+            telefone: "(11) 2222-3333",
+            horario: "Segunda a Sexta: 7h às 17h",
+            lotacao: "Baixa",
+            ocupacao: 25,
+            tempoEspera: "15 minutos",
+            servicos: ["Consulta Médica", "Vacina", "Pré-natal"],
+            documentos: ["RG", "CPF", "Cartão SUS", "Comprovante de Residência"]
+          }
+        };
+        
+        const unidade = unidades[id] || unidades['1'];
+        
+        // Atualizar informações na página
+        document.getElementById('unidade-titulo').textContent = unidade.nome;
+        document.getElementById('unidade-endereco').textContent = unidade.endereco;
+        document.getElementById('unidade-telefone').textContent = unidade.telefone;
+        document.getElementById('unidade-horario').textContent = unidade.horario;
+        
+        // Atualizar status de lotação
+        const lotacaoElement = document.getElementById('unidade-lotacao');
+        lotacaoElement.textContent = `${unidade.lotacao} Lotação`;
+        
+        // Ajustar classe do badge de lotação
+        lotacaoElement.className = 'badge';
+        if (unidade.lotacao === 'Baixa') {
+          lotacaoElement.classList.add('badge-success');
+        } else if (unidade.lotacao === 'Média') {
+          lotacaoElement.classList.add('badge-warning');
+        } else {
+          lotacaoElement.classList.add('badge-error');
+        }
+        
+        // Atualizar barra de ocupação
+        document.getElementById('unidade-ocupacao').textContent = `${unidade.ocupacao}%`;
+        const barraOcupacao = document.getElementById('unidade-ocupacao-barra');
+        barraOcupacao.style.width = `${unidade.ocupacao}%`;
+        
+        // Ajustar cor da barra de ocupação
+        if (unidade.ocupacao < 40) {
+          barraOcupacao.className = 'h-full bg-green-500 rounded-full';
+        } else if (unidade.ocupacao < 70) {
+          barraOcupacao.className = 'h-full bg-yellow-500 rounded-full';
+        } else {
+          barraOcupacao.className = 'h-full bg-red-500 rounded-full';
+        }
+        
+        // Atualizar tempo de espera
+        document.getElementById('unidade-tempo-espera').textContent = unidade.tempoEspera;
+        
+        // Atualizar serviços
+        const servicosContainer = document.getElementById('unidade-servicos');
+        servicosContainer.innerHTML = '';
+        unidade.servicos.forEach(servico => {
+          const badge = document.createElement('span');
+          badge.className = 'badge bg-gray-100 text-gray-600';
+          badge.textContent = servico;
+          servicosContainer.appendChild(badge);
+        });
+        
+        // Atualizar documentos
+        const documentosContainer = document.getElementById('unidade-documentos');
+        documentosContainer.innerHTML = '';
+        unidade.documentos.forEach(documento => {
+          const item = document.createElement('li');
+          item.textContent = documento;
+          documentosContainer.appendChild(item);
+        });
+        
+        // Simular carregamento do mapa
+        setTimeout(() => {
+          document.querySelector('.loading-indicator').innerHTML = `
+            <div class="text-center">
+              <i class="fas fa-map-marker-alt text-blue-600 text-4xl mb-3"></i>
+              <p class="text-gray-700 font-medium">${unidade.nome}</p>
+              <p class="text-gray-500 text-sm">${unidade.endereco}</p>
+              <p class="text-gray-400 text-xs mt-4">(Mapa seria exibido aqui com a API implementada)</p>
+            </div>
+          `;
+        }, 1500);
+        
+      }, 1000);
+    }
+    
+    // Funções para o modal de direções
+    function abrirModalDirecoes() {
+      document.getElementById('modal-direcoes').classList.remove('hidden');
+      document.getElementById('direcoes-resultado').classList.add('hidden');
+    }
+    
+    function fecharModalDirecoes() {
+      document.getElementById('modal-direcoes').classList.add('hidden');
+    }
+    
+    function calcularRota() {
+      const origem = document.getElementById('origem').value;
+      
+      if (!origem) {
+        alert('Por favor, digite seu endereço de origem');
+        return;
+      }
+      
+      // Simular carregamento
+      document.getElementById('calcular-rota').textContent = 'Calculando...';
+      
+      // Em um cenário real, isso seria uma chamada para a API de mapas
+      setTimeout(() => {
+        document.getElementById('calcular-rota').textContent = 'Calcular Rota';
+        document.getElementById('direcoes-resultado').classList.remove('hidden');
+        
+        // Rolar para mostrar o resultado
+        document.getElementById('direcoes-resultado').scrollIntoView({ behavior: 'smooth' });
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

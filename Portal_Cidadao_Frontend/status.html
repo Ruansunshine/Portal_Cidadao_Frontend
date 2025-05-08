@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Status de Lotação - Sistema de Saúde Pública</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="js/acessibilidade.js" defer></script>
+</head>
+<body>
+  <header class="main-header">
+    <div class="container">
+      <div class="logo">
+        <a href="index.html">Sistema de Saúde Pública</a>
+      </div>
+      <button class="menu-toggle" aria-label="Abrir menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="index.html">Página Inicial</a></li>
+          <li><a href="agendar.html">Agendar Consulta</a></li>
+          <li><a href="unidades.html">Buscar Unidades</a></li>
+          <li><a href="status.html" class="active">Status de Lotação</a></li>
+          <li><a href="rotas.html">Rotas de Transporte</a></li>
+          <li><a href="alertas.html">Alertas</a></li>
+        </ul>
+        <div class="auth-buttons">
+          <button class="btn btn-outline">Entrar</button>
+          <button class="btn btn-primary">Cadastrar</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <h1>Status de Lotação</h1>
+        <p>Verifique a lotação das unidades de saúde em tempo real</p>
+      </div>
+    </section>
+
+    <section class="status-section">
+      <div class="container">
+        <div class="tabs">
+          <button class="tab-btn active" data-filter="todos">Todos</button>
+          <button class="tab-btn" data-filter="baixa">Baixa Lotação</button>
+          <button class="tab-btn" data-filter="média">Média Lotação</button>
+          <button class="tab-btn" data-filter="alta">Alta Lotação</button>
+        </div>
+
+        <div class="status-grid" id="status-container">
+          <!-- Status cards serão inseridos aqui via JavaScript -->
+        </div>
+
+        <div class="status-update-info">
+          <p>Os dados de lotação são atualizados a cada 10 minutos. Última atualização: <span id="last-update"></span></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 Sistema de Saúde Pública. Todos os direitos reservados.</p>
+      <div class="footer-links">
+        <a href="acessibilidade.html">Acessibilidade</a>
+        <a href="privacidade.html">Política de Privacidade</a>
+        <a href="termos.html">Termos de Uso</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="accessibility-controls">
+    <button class="accessibility-toggle" aria-label="Controles de acessibilidade">
+      <i class="fas fa-universal-access"></i>
+    </button>
+    <div class="accessibility-panel">
+      <h3>Acessibilidade</h3>
+      
+      <div class="accessibility-option">
+        <label for="theme-toggle">Tema</label>
+        <button id="theme-toggle" class="btn btn-icon">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+      
+      <div class="accessibility-option">
+        <label for="font-size">Tamanho da fonte</label>
+        <div class="font-size-control">
+          <i class="fas fa-font fa-sm"></i>
+          <input type="range" id="font-size" min="80" max="150" step="10" value="100">
+          <i class="fas fa-font"></i>
+          <span class="font-size-value">100%</span>
+        </div>
+      
+      <div class="accessibility-option">
+        <label for="high-contrast">Alto contraste</label>
+        <label class="switch">
+          <input type="checkbox" id="high-contrast">
+          <span class="slider"></span>
+        </label>
+      </div>
+      
+      <div class="accessibility-option">
+        <label for="text-to-speech">Leitura de texto</label>
+        <label class="switch">
+          <input type="checkbox" id="text-to-speech">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script src="js/status.js"></script>
+</body>
+</html>
