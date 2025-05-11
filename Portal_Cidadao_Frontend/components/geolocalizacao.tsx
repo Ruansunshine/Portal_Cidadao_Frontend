@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useMap, Marker, Popup } from "react-leaflet"
 import { Icon } from "leaflet"
+import { useEffect, useState } from "react"
+import { Marker, Popup, useMap } from "react-leaflet"
+
 
 export default function Geolocalizacao() {
   const [position, setPosition] = useState<[number, number] | null>(null)
