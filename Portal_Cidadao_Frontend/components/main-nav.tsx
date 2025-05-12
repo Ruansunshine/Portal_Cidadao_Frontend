@@ -90,7 +90,7 @@ export function MainNav({ hideAuthButtons = false }: MainNavProps) {
           </SheetContent>
         </Sheet>
         <Link href="/" className="mr-6 flex items-center space-x-2">
-          <span className="hidden font-bold sm:inline-block">Sistema de Saúde Pública</span>
+          <span className="hidden font-bold sm:inline-block">Acesso ao serviços públicos</span>
         </Link>
         <nav className="hidden md:flex md:flex-1 md:items-center md:justify-between">
           <div className="flex gap-6">

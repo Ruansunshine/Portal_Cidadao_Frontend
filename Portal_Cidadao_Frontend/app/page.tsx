@@ -277,7 +277,7 @@ export default function Home() {
                   <div className="mr-2 rounded-full bg-primary/10 p-2">
                     <HomeIcon className="h-6 w-6 text-primary" />
                   </div>
-                  <h2 className="text-xl font-bold">Sistema de Saúde</h2>
+                  <h2 className="text-xl font-bold">Acesso a serviços públicos</h2>
                 </div>
                 <nav className="flex flex-col gap-4 py-4">
                   <Link
@@ -329,7 +329,7 @@ export default function Home() {
               <div className="hidden md:flex rounded-full bg-primary/10 p-1">
                 <Activity className="h-5 w-5 text-primary" />
               </div>
-              <span className="font-bold">Sistema de Saúde Pública</span>
+              <span className="font-bold">Acesso ao serviços públicos</span>
             </Link>
           </div>
           <div className="flex items-center gap-4">
