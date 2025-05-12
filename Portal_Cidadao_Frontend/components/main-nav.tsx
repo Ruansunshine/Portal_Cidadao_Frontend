@@ -149,12 +149,12 @@ export function MainNav({ hideAuthButtons = false }: MainNavProps) {
               Alertas
             </Link>
           </div>
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <Button variant="outline" size="sm">
               Entrar
             </Button>
             <Button size="sm">Cadastrar</Button>
-          </div>
+          </div> */}
         </nav>
       </div>
     </header>

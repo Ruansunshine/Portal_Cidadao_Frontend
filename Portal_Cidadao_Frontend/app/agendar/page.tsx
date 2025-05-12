@@ -363,7 +363,10 @@ export default function AgendarConsulta() {
       console.log("Unidades próximas atualizadas:", unidadesProximas)
     }
   }, [unidadesProximas])
-
+function agendar(){
+  
+}
+  
   return (
     <div className="flex min-h-screen flex-col">
       <MainNavCustom />

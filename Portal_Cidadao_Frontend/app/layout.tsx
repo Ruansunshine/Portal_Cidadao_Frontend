@@ -15,7 +15,7 @@ const fontSans = FontSans({
 export const metadata: Metadata = {
   title: "Sistema de Saúde Pública",
   description: "Acesso à informação sobre serviços públicos de saúde",
-    generator: 'v0.dev'
+
 }
 
 export default function RootLayout({
