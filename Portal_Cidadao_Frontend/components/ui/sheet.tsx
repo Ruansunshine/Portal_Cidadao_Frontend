@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -69,6 +67,8 @@ const SheetContent = React.forwardRef<
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>
+      {/* Adicionando um título oculto para acessibilidade */}
+      <SheetPrimitive.Title className="sr-only">Sheet Dialog</SheetPrimitive.Title>
     </SheetPrimitive.Content>
   </SheetPortal>
 ))

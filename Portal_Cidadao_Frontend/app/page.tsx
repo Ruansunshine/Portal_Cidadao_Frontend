@@ -1,11 +1,13 @@
-"use client";
-import { jwtDecode } from "jwt-decode";
-import { useState, useEffect } from "react";
-import { ServiceCard } from "@/components/service-card";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+"use client"
+import { jwtDecode } from "jwt-decode"
+import type React from "react"
+
+import { useState, useEffect } from "react"
+import { ServiceCard } from "@/components/service-card"
+import { Button } from "@/components/ui/button"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Calendar,
   MapPin,
@@ -19,44 +21,45 @@ import {
   Activity,
   Sparkles,
   HomeIcon,
-} from "lucide-react";
-import Link from "next/link";
+  Send,
+} from "lucide-react"
+import Link from "next/link"
+// import { gerarRespostaSaude } from "@/utils/gemini-ai"
 
 export default function Home() {
-  const [userName, setUserName] = useState("Usuário");
-  const [userEmail, setUserEmail] = useState("Usuario");
-  const [aiPrompt, setAiPrompt] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [currentTime, setCurrentTime] = useState("");
-  const [activeTab, setActiveTab] = useState("todos");
-  
+  const [userName, setUserName] = useState("Usuário")
+  const [userEmail, setUserEmail] = useState("Usuario")
+  const [aiPrompt, setAiPrompt] = useState("")
+  const [aiResponse, setAiResponse] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [currentTime, setCurrentTime] = useState("")
+  const [activeTab, setActiveTab] = useState("todos")
+  const [chatHistory, setChatHistory] = useState<{ question: string; answer: string }[]>([])
 
   // Função para buscar o nome do usuário do banco de dados
-
   const fetchUserName = async () => {
     try {
       // Recupera o ID do usuário do localStorage
-      const userString = localStorage.getItem("user");
-      const token = localStorage.getItem("token");
+      const userString = localStorage.getItem("user")
+      const token = localStorage.getItem("token")
 
-      if (!userString && !token) return;
+      if (!userString && !token) return
 
-      let userId;
+      let userId
 
       // Tenta obter o ID do usuário do objeto armazenado
       if (userString) {
         try {
-          const userData = JSON.parse(userString);
-          userId = userData?.id;
+          const userData = JSON.parse(userString)
+          userId = userData?.id
           // Se já temos o nome no objeto, podemos usá-lo diretamente
           if (userData?.name) {
-            setUserName(userData.name);
-            setUserEmail(userData.email);
-            return;
+            setUserName(userData.name)
+            setUserEmail(userData.email)
+            return
           }
-        
         } catch (error) {
-          console.error("Erro ao analisar dados do usuário:", error);
+          console.error("Erro ao analisar dados do usuário:", error)
         }
       }
 
@@ -64,87 +67,82 @@ export default function Home() {
       if (!userId && token) {
         try {
           interface MyJwtPayload {
-            id: number;
-            name?: string;
-            email?: string;
-            iat?: number;
-            exp?: number;
+            id: number
+            name?: string
+            email?: string
+            iat?: number
+            exp?: number
           }
-          const decodificador = jwtDecode<MyJwtPayload>(token);
-          userId = decodificador?.id;
+          const decodificador = jwtDecode<MyJwtPayload>(token)
+          userId = decodificador?.id
         } catch (error) {
-          console.error("Error ao decodificar token: ", error);
-          return;
+          console.error("Error ao decodificar token: ", error)
+          return
         }
       }
 
-      if (!userId) return;
+      if (!userId) return
 
       // Faz a requisição para o backend para buscar os dados do usuário
-      const response = await fetch(
-        `http://localhost:3000/router/buscar/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`http://localhost:3000/router/buscar/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
 
       if (response.ok) {
-        const userData = await response.json();
-        setUserName(userData.name || "Usuário");
+        const userData = await response.json()
+        setUserName(userData.name || "Usuário")
 
         // Atualiza o localStorage com os dados completos
-        localStorage.setItem("user", JSON.stringify(userData.Users));
+        localStorage.setItem("user", JSON.stringify(userData.Users))
       }
     } catch (error) {
-      console.error("Erro ao buscar dados do usuário:", error);
+      console.error("Erro ao buscar dados do usuário:", error)
     }
-  };
+  }
 
   // Recupera dados da localStorage e URL
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get("token");
-      const user = params.get("user");
+      const params = new URLSearchParams(window.location.search)
+      const token = params.get("token")
+      const user = params.get("user")
 
       if (token && user) {
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", user);
-        window.history.replaceState({}, document.title, "/");
+        localStorage.setItem("token", token)
+        localStorage.setItem("user", user)
+        window.history.replaceState({}, document.title, "/")
       }
 
       // Tenta obter o nome do usuário do localStorage primeiro
-      const userString = localStorage.getItem("user");
+      const userString = localStorage.getItem("user")
       if (userString) {
         try {
-          const userData = JSON.parse(userString);
-          setUserName(userData?.name || " ");
+          const userData = JSON.parse(userString)
+          setUserName(userData?.name || " ")
         } catch {
-          setUserName("Usuário");
+          setUserName("Usuário")
         }
       }
 
       // Busca os dados atualizados do usuário do banco
-      fetchUserName();
+      fetchUserName()
     }
-  }, []);
+  }, [])
 
   // Atualiza o horário atual
   useEffect(() => {
     const updateTime = () => {
-      const now = new Date();
-      setCurrentTime(
-        now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
-      );
-    };
+      const now = new Date()
+      setCurrentTime(now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }))
+    }
 
-    updateTime();
-    const interval = setInterval(updateTime, 60000);
+    updateTime()
+    const interval = setInterval(updateTime, 60000)
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(interval)
+  }, [])
 
   // Lista de prompts pré-estabelecidos
   const presetPrompts = [
@@ -154,35 +152,69 @@ export default function Home() {
     "Onde encontro meu cartão SUS?",
     "Quais vacinas estão disponíveis?",
     "Horário de funcionamento",
-  ];
+  ]
 
-  // Simula resposta da IA
-  const handleAskQuestion = () => {
-    if (!aiPrompt) return;
+  // Função para processar a pergunta usando a API do Gemini
+  // const handleAskQuestion = async () => {
+  //   if (!aiPrompt.trim()) return
 
-    setIsLoading(true);
+  //   setIsLoading(true)
 
-    // Simula tempo de resposta da API
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-  };
+  //   try {
+  //     // Salva a pergunta atual
+  //     const currentQuestion = aiPrompt
+
+  //     // Limpa o campo de entrada
+  //     setAiPrompt("")
+
+  //     // Chama a API do Gemini
+  //     const resposta = await gerarRespostaSaude(currentQuestion)
+
+  //     // Adiciona a nova interação ao histórico
+  //     setChatHistory((prev) => [
+  //       ...prev,
+  //       {
+  //         question: currentQuestion,
+  //         answer: resposta,
+  //       },
+  //     ])
+
+  //     // Atualiza a resposta atual
+  //     setAiResponse(resposta)
+  //   } catch (error) {
+  //     console.error("Erro ao processar pergunta:", error)
+  //     setAiResponse("Desculpe, ocorreu um erro ao processar sua pergunta. Por favor, tente novamente.")
+  //   } finally {
+  //     setIsLoading(false)
+  //   }
+  // }
+
+  // Função para lidar com a seleção de prompts pré-definidos
+  const handleSelectPrompt = (prompt: string) => {
+    setAiPrompt(prompt)
+  }
+
+  // Função para lidar com o envio do formulário ao pressionar Enter
+  // const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (e.key === "Enter" && !isLoading && aiPrompt.trim()) {
+  //     e.preventDefault()
+  //     handleAskQuestion()
+  //   }
+  // }
 
   // Serviços disponíveis organizados por categoria
   const services = {
     todos: [
       {
         title: "Agendar Consulta",
-        description:
-          "Agende consultas médicas, vacinas e outros serviços de saúde.",
+        description: "Agende consultas médicas, vacinas e outros serviços de saúde.",
         icon: <Calendar className="h-8 w-8" />,
         href: "/agendar",
         badge: null,
       },
       {
         title: "Buscar Unidades de Saúde",
-        description:
-          "Encontre unidades de saúde por bairro ou tipo de serviço.",
+        description: "Encontre unidades de saúde por bairro ou tipo de serviço.",
         icon: <Search className="h-8 w-8" />,
         href: "/unidades",
         badge: null,
@@ -196,8 +228,7 @@ export default function Home() {
       },
       {
         title: "Rotas de Transporte",
-        description:
-          "Visualize rotas de transporte público para chegar às unidades de saúde.",
+        description: "Visualize rotas de transporte público para chegar às unidades de saúde.",
         icon: <Bus className="h-8 w-8" />,
         href: "/rotas",
         badge: null,
@@ -220,8 +251,7 @@ export default function Home() {
     populares: [
       {
         title: "Agendar Consulta",
-        description:
-          "Agende consultas médicas, vacinas e outros serviços de saúde.",
+        description: "Agende consultas médicas, vacinas e outros serviços de saúde.",
         icon: <Calendar className="h-8 w-8" />,
         href: "/agendar",
         badge: "Popular",
@@ -257,7 +287,7 @@ export default function Home() {
         badge: "Novo",
       },
     ],
-  };
+  }
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-b from-background to-background/80">
@@ -333,9 +363,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="flex items-center gap-4">
-            <div className="hidden md:block text-sm text-muted-foreground">
-              {currentTime}
-            </div>
+            <div className="hidden md:block text-sm text-muted-foreground">{currentTime}</div>
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="relative">
@@ -372,9 +400,9 @@ export default function Home() {
                         variant="destructive"
                         className="w-full"
                         onClick={() => {
-                          localStorage.removeItem("token");
-                          localStorage.removeItem("user");
-                          window.location.href = "/login";
+                          localStorage.removeItem("token")
+                          localStorage.removeItem("user")
+                          window.location.href = "/login"
                         }}
                       >
                         <LogOut className="mr-2 h-4 w-4" />
@@ -403,8 +431,7 @@ export default function Home() {
                   Olá, <span className="text-primary">{userName}</span>
                 </h1>
                 <p className="text-xl text-muted-foreground">
-                  Acesse informações sobre serviços públicos de saúde, agende
-                  consultas e mais.
+                  Acesse informações sobre serviços públicos de saúde, agende consultas e mais.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -413,9 +440,7 @@ export default function Home() {
                     <Calendar className="h-4 w-4 text-primary" />
                     Próxima consulta
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    15 de Maio, 14:30
-                  </div>
+                  <div className="text-sm text-muted-foreground">15 de Maio, 14:30</div>
                 </div>
                 <Button className="w-full sm:w-auto gap-2 shadow-sm">
                   <Calendar className="h-4 w-4" />
@@ -429,12 +454,7 @@ export default function Home() {
         {/* Cards de serviços - Versão melhorada e mais estética */}
         <section className="container py-12">
           <div className="mb-8">
-            <Tabs
-              defaultValue="todos"
-              value={activeTab}
-              onValueChange={setActiveTab}
-              className="w-full"
-            >
+            <Tabs defaultValue="todos" value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <h2 className="text-2xl font-bold">Serviços disponíveis</h2>
                 <TabsList className="grid grid-cols-3 w-full sm:w-[300px]">
@@ -447,23 +467,21 @@ export default function Home() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {services[activeTab as keyof typeof services].map(
-              (service, index) => (
-                <ServiceCard
-                  key={index}
-                  title={service.title}
-                  description={service.description}
-                  icon={service.icon}
-                  href={service.href}
-                  badge={service.badge}
-                  className="transform transition-all hover:scale-[1.02] hover:shadow-lg"
-                />
-              )
-            )}
+            {services[activeTab as keyof typeof services].map((service, index) => (
+              <ServiceCard
+                key={index}
+                title={service.title}
+                description={service.description}
+                icon={service.icon}
+                href={service.href}
+                badge={service.badge}
+                className="transform transition-all hover:scale-[1.02] hover:shadow-lg"
+              />
+            ))}
           </div>
         </section>
 
-        {/* Seção de ajuda com IA */}
+        {/* Seção de ajuda com IA - Versão atualizada com integração Gemini */}
         <section className="container py-12">
           <div className="rounded-xl bg-gradient-to-r from-primary/5 via-background to-primary/5 p-6 md:p-8 shadow-md border">
             <div className="flex flex-col md:flex-row items-start gap-6">
@@ -471,13 +489,10 @@ export default function Home() {
                 <MessageSquareText className="h-8 w-8 text-primary" />
               </div>
               <div className="flex-1">
-                <h2 className="mb-4 text-2xl font-bold">
-                  Assistente de Saúde Virtual
-                </h2>
+                <h2 className="mb-4 text-2xl font-bold">Assistente de Saúde Virtual</h2>
                 <p className="mb-6 text-muted-foreground">
-                  Nosso assistente virtual inteligente pode ajudar com
-                  informações sobre os serviços de saúde, tirar dúvidas sobre
-                  procedimentos e fornecer orientações gerais.
+                  Nosso assistente virtual inteligente pode ajudar com informações sobre os serviços de saúde, tirar
+                  dúvidas sobre procedimentos e fornecer orientações gerais.
                 </p>
 
                 <div className="space-y-6">
@@ -486,7 +501,7 @@ export default function Home() {
                       <Button
                         key={index}
                         variant="outline"
-                        onClick={() => setAiPrompt(prompt)}
+                        onClick={() => handleSelectPrompt(prompt)}
                         className="text-sm bg-background shadow-sm hover:bg-primary/5"
                       >
                         {prompt}
@@ -494,60 +509,72 @@ export default function Home() {
                     ))}
                   </div>
 
-                  <div className="flex gap-2">
+                  {/* <div className="flex gap-2">
                     <input
                       type="text"
                       value={aiPrompt}
                       onChange={(e) => setAiPrompt(e.target.value)}
+                      onKeyPress={handleKeyPress}
                       placeholder="Digite sua pergunta aqui..."
                       className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background shadow-sm focus:ring-1 focus:ring-primary/20"
                     />
-                    <Button
-                      onClick={handleAskQuestion}
-                      disabled={isLoading}
-                      className="shadow-sm"
-                    >
-                      {isLoading ? "Processando..." : "Perguntar"}
-                    </Button>
-                  </div>
-
-                  {/* Área onde as respostas da IA serão exibidas */}
-                  {aiPrompt && (
-                    <div className="mt-4 rounded-md bg-card p-4 border shadow-sm">
+                    <Button onClick={handleAskQuestion} disabled={isLoading || !aiPrompt.trim()} className="shadow-sm">
                       {isLoading ? (
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-2 animate-pulse rounded-full bg-primary"></div>
-                          <div
-                            className="h-2 w-2 animate-pulse rounded-full bg-primary"
-                            style={{ animationDelay: "0.2s" }}
-                          ></div>
-                          <div
-                            className="h-2 w-2 animate-pulse rounded-full bg-primary"
-                            style={{ animationDelay: "0.4s" }}
-                          ></div>
-                          <span className="ml-2 text-sm font-medium">
-                            Processando sua pergunta...
-                          </span>
-                        </div>
+                        "Processando..."
                       ) : (
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-                              <Sparkles className="h-4 w-4 text-primary" />
-                            </div>
-                            <p className="text-sm font-medium">
-                              Assistente de Saúde
-                            </p>
-                          </div>
-                          <p className="text-sm pl-10">
-                            Resposta será exibida aqui quando a API for
-                            implementada. Esta é apenas uma visualização de como
-                            ficará a interface.
-                          </p>
-                        </div>
+                        <>
+                          <Send className="h-4 w-4 mr-2" />
+                          Enviar
+                        </>
                       )}
-                    </div>
-                  )}
+                    </Button>
+                  </div> */}
+
+                  {/* Área de chat com histórico de perguntas e respostas */}
+                  <div className="mt-4 rounded-md bg-card p-4 border shadow-sm max-h-[400px] overflow-y-auto">
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-primary"></div>
+                        <div
+                          className="h-2 w-2 animate-pulse rounded-full bg-primary"
+                          style={{ animationDelay: "0.2s" }}
+                        ></div>
+                        <div
+                          className="h-2 w-2 animate-pulse rounded-full bg-primary"
+                          style={{ animationDelay: "0.4s" }}
+                        ></div>
+                        <span className="ml-2 text-sm font-medium">Processando sua pergunta...</span>
+                      </div>
+                    ) : chatHistory.length > 0 ? (
+                      <div className="space-y-6">
+                        {chatHistory.map((chat, index) => (
+                          <div key={index} className="space-y-4">
+                            {/* Pergunta do usuário */}
+                            <div className="flex justify-end">
+                              <div className="bg-primary/10 rounded-lg p-3 max-w-[80%]">
+                                <p className="text-sm">{chat.question}</p>
+                              </div>
+                            </div>
+
+                            {/* Resposta do assistente */}
+                            <div className="flex items-start gap-2">
+                              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                                <Sparkles className="h-4 w-4 text-primary" />
+                              </div>
+                              <div className="bg-card rounded-lg p-3 border shadow-sm">
+                                <p className="text-sm whitespace-pre-line">{chat.answer}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <MessageSquareText className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                        <p>Faça uma pergunta para o assistente virtual</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="mt-6 flex justify-end">
@@ -580,26 +607,19 @@ export default function Home() {
               >
                 Acessibilidade
               </Link>
-              <Link
-                href="/privacidade"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
+              <Link href="/privacidade" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                 Política de Privacidade
               </Link>
-              <Link
-                href="/termos"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
+              <Link href="/termos" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                 Termos de Uso
               </Link>
             </div>
             <p className="text-center text-xs text-muted-foreground">
-              &copy; 2024 Sistema de Saúde Pública. Todos os direitos
-              reservados.
+              &copy; 2024 Sistema de Saúde Pública. Todos os direitos reservados.
             </p>
           </div>
         </div>
       </footer>
     </div>
-  );
+  )
 }

@@ -95,40 +95,40 @@ export default function UnidadesSaude() {
   }, [])
 
   // Carregar a API do Google Maps
-  useEffect(() => {
-    // Função para carregar o script do Google Maps
-    const carregarGoogleMapsAPI = () => {
-      // Verificar se o script já foi carregado
-      if (window.google && window.google.maps) {
-        setGoogleMapsLoaded(true)
-        return
-      }
+  // useEffect(() => {
+  //   // Função para carregar o script do Google Maps
+  //   const carregarGoogleMapsAPI = () => {
+  //     // Verificar se o script já foi carregado
+  //     if (window.google && window.google.maps) {
+  //       setGoogleMapsLoaded(true)
+  //       return
+  //     }
 
-      // Criar script para carregar a API do Google Maps
-      const script = document.createElement("script")
-      script.src = `https://maps.googleapis.com/maps/api/js?key=SUA_API_KEY_AQUI&libraries=places`
-      script.async = true
-      script.defer = true
-      script.onload = () => {
-        setGoogleMapsLoaded(true)
-        console.log("Google Maps API carregada com sucesso")
-      }
-      script.onerror = () => {
-        console.error("Erro ao carregar a API do Google Maps")
-      }
-      document.head.appendChild(script)
-    }
+  //     // Criar script para carregar a API do Google Maps
+  //     const script = document.createElement("script")
+  //     script.src = `https://maps.googleapis.com/maps/api/js?key=SUA_API_KEY_AQUI&libraries=places`
+  //     script.async = true
+  //     script.defer = true
+  //     script.onload = () => {
+  //       setGoogleMapsLoaded(true)
+  //       console.log("Google Maps API carregada com sucesso")
+  //     }
+  //     script.onerror = () => {
+  //       console.error("Erro ao carregar a API do Google Maps")
+  //     }
+  //     document.head.appendChild(script)
+  //   }
 
-    carregarGoogleMapsAPI()
+  //   carregarGoogleMapsAPI()
 
-    // Limpar script ao desmontar o componente
-    return () => {
-      const script = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]')
-      if (script) {
-        script.remove()
-      }
-    }
-  }, [])
+  //   // Limpar script ao desmontar o componente
+  //   return () => {
+  //     const script = document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]')
+  //     if (script) {
+  //       script.remove()
+  //     }
+  //   }
+  // }, [])
 
   // Buscar unidades de saúde da API
   useEffect(() => {
@@ -166,33 +166,33 @@ export default function UnidadesSaude() {
                   let placeId = undefined
 
                   // Se a API do Google Maps estiver carregada, buscar dados adicionais
-                  if (googleMapsLoaded && window.google && window.google.maps) {
-                    try {
-                      // Buscar o local no Google Places
-                      const resultado = await buscarLocalNoGooglePlaces(
-                        unidade.nome,
-                        unidade.localizacao.lat,
-                        unidade.localizacao.lng,
-                      )
+                  // if (googleMapsLoaded && window.google && window.google.maps) {
+                  //   try {
+                  //     // Buscar o local no Google Places
+                  //     const resultado = await buscarLocalNoGooglePlaces(
+                  //       unidade.nome,
+                  //       unidade.localizacao.lat,
+                  //       unidade.localizacao.lng,
+                  //     )
 
-                      if (resultado) {
-                        placeId = resultado.place_id
-                        // Buscar detalhes do local, incluindo horários de funcionamento
-                        const detalhes = await buscarDetalhesDoLocal(resultado.place_id)
-                        if (detalhes) {
-                          // Processar horários de funcionamento
-                          if (detalhes.opening_hours && detalhes.opening_hours.weekday_text) {
-                            horarios = processarHorariosFuncionamento(detalhes.opening_hours.weekday_text)
-                          }
+                  //     if (resultado) {
+                  //       placeId = resultado.place_id
+                  //       // Buscar detalhes do local, incluindo horários de funcionamento
+                  //       const detalhes = await buscarDetalhesDoLocal(resultado.place_id)
+                  //       if (detalhes) {
+                  //         // Processar horários de funcionamento
+                  //         if (detalhes.opening_hours && detalhes.opening_hours.weekday_text) {
+                  //           horarios = processarHorariosFuncionamento(detalhes.opening_hours.weekday_text)
+                  //         }
 
-                          // Processar dados de lotação (simulado, pois a API do Google não fornece diretamente)
-                          lotacao = simularDadosLotacao(detalhes)
-                        }
-                      }
-                    } catch (error) {
-                      console.error("Erro ao buscar dados do Google Maps:", error)
-                    }
-                  }
+                  //         // Processar dados de lotação (simulado, pois a API do Google não fornece diretamente)
+                  //         lotacao = simularDadosLotacao(detalhes)
+                  //       }
+                  //     }
+                  //   } catch (error) {
+                  //     console.error("Erro ao buscar dados do Google Maps:", error)
+                  //   }
+                  // }
 
                   return {
                     id: unidade.id,
